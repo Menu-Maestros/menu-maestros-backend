@@ -2,8 +2,11 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
 from backend.database import get_db
+from backend.api.menu import router as menu_router
 
 app = FastAPI()
+
+app.include_router(menu_router)
 
 @app.get("/")
 def read_root():
@@ -16,3 +19,5 @@ async def test_db(db: AsyncSession = Depends(get_db)):
         return {"message": "Database connection successful!"}
     except Exception as e:
         return {"error": str(e)}
+    
+

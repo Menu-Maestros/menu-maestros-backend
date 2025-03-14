@@ -1,2 +1,1 @@
-# streamlit-menu-app-backend
-Menu web application backend for small restaurants
+### ChatGPT paircoding: https://chatgpt.com/share/67d4888a-fd74-8010-a2a9-00ef00001e44

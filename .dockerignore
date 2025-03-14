@@ -1,0 +1,21 @@
+# Ignore sensitive environment variables
+.env
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environments
+venv/
+.env/
+.venv/
+
+# Ignore Docker-related files
+.dockerignore
+Dockerfile
+
+# Ignore logs and temp files
+*.log
+tmp/
