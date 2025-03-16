@@ -9,6 +9,7 @@ class MenuItemCreate(BaseModel):
     price: float
     image_url: str | None = None
     category: str  # "food", "drink", etc.
+    available: bool = True
 
     class Config:
         from_attributes = True  # Allows SQLAlchemy-to-Pydantic conversion
@@ -20,6 +21,7 @@ class MenuItemUpdate(BaseModel):
     price: float | None = None
     image_url: str | None = None
     category: str | None = None
+    available: bool | None = None
 
     class Config:
         from_attributes = True
