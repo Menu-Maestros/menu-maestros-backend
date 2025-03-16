@@ -10,14 +10,14 @@ from uuid import UUID
 
 router = APIRouter()
 
-@router.get("/menu/", response_model=list[MenuItemCreate])
+@router.get("/menu/", response_model=list[MenuItemUpdate])
 async def get_menu(db: AsyncSession = Depends(get_db)):
     """Retrieve all menu items."""
     result = await db.execute(select(MenuItem))
     menu_items = result.scalars().all()
     return menu_items
 
-@router.get("/menu/{item_id}", response_model=MenuItemCreate)
+@router.get("/menu/{item_id}", response_model=MenuItemUpdate)
 async def get_menu_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
     """Retrieve a single menu item by UUID."""
     item = await db.get(MenuItem, item_id)
@@ -47,7 +47,7 @@ async def add_menu_item(item: MenuItemCreate, db: AsyncSession = Depends(get_db)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error adding menu item: {str(e)}")
     
-@router.put("/menu/{item_id}", response_model=MenuItemCreate)
+@router.put("/menu/{item_id}", response_model=MenuItemUpdate)
 async def update_menu_item(
     item_id: UUID, 
     item_data: MenuItemUpdate, 
