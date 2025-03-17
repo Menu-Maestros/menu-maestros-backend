@@ -1,10 +1,10 @@
 # **🍽️ Streamlit Menu App Backend**  
-This is the **FastAPI backend** for the Streamlit-based restaurant menu application. It manages **menu items, customer orders, and authentication** while connecting to a **Neon PostgreSQL** database.  
+This is the **FastAPI backend** for the Streamlit-based restaurant menu application.
 
 ## **📌 Features**  
 ✅ **Menu Management**: Add, update, delete menu items  
 ✅ **Order Handling**: Customers can place and update orders  
-✅ **Authentication**: JWT-based security for restaurant-side users  
+<!-- ✅ **Authentication**: JWT-based security for restaurant-side users   -->
 ✅ **Database**: Uses **Neon PostgreSQL** for serverless storage  
 ✅ **Asynchronous API**: Powered by FastAPI and SQLAlchemy  
 
@@ -22,8 +22,9 @@ cd streamlit-menu-app-backend
 Create a `.env` file inside the project folder with:  
 ```
 DATABASE_URL=postgresql+asyncpg://user:password@your-neon-db-url/dbname
-JWT_SECRET_KEY=your-secret-key
 ```
+<!-- JWT_SECRET_KEY=your-secret-key -->
+<!-- ``` -->
 
 ---
 
@@ -88,9 +89,3 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 ### **👨‍💻 Chat Guides**  
 If want to follow the original chat thread that gave rise to all this backend see my [ChatGPT paircoding](https://chatgpt.com/share/67d4888a-fd74-8010-a2a9-00ef00001e44).
-
----
-
-This README covers **installation, setup, and API usage** while keeping it **concise and developer-friendly**. Let me know if you'd like any tweaks! 🚀🔥
-
-### 
