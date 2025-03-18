@@ -25,7 +25,7 @@ async def get_menu_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Item not found")
     return item
 
-@router.post("/menu/")
+@router.post("/menu/", response_model=MenuItemCreate)
 async def add_menu_item(item: MenuItemCreate, db: AsyncSession = Depends(get_db)):
     try:
         # Create a new menu item
@@ -42,7 +42,7 @@ async def add_menu_item(item: MenuItemCreate, db: AsyncSession = Depends(get_db)
         await db.commit()
         await db.refresh(new_item)
 
-        return {"message": "Menu item added successfully!", "item": new_item}
+        return new_item
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error adding menu item: {str(e)}")
