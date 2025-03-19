@@ -63,13 +63,8 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ---
 
 ## **📌 API Endpoints**
-| Method | Endpoint         | Description                  | Auth Required? |
-|--------|----------------|-----------------------------|---------------|
-| `POST` | `/menu/add`     | Add a menu item             | ✅ Yes        |
-| `GET`  | `/menu/list`    | Get all menu items          | ❌ No         |
-| `POST` | `/order/create` | Create a new customer order | ❌ No         |
-| `GET`  | `/orders`       | Get all orders (restaurant) | ✅ Yes        |
 
+Still configuring Swagger for easy API Endpoints documentation
 ---
 
 ## **🛠️ Technologies Used**  
@@ -83,9 +78,4 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ### **🚀 Future Enhancements**  
 - ✅ WebSockets for real-time order updates  
 - ✅ Restaurant dashboard UI with Streamlit  
-- ✅ Payment integration  
-
----
-
-### **👨‍💻 Chat Guides**  
-If want to follow the original chat thread that gave rise to all this backend see my [ChatGPT paircoding](https://chatgpt.com/share/67d4888a-fd74-8010-a2a9-00ef00001e44).
+- ✅ Payment integration
