@@ -63,8 +63,7 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ---
 
 ## **📌 API Endpoints**
-
-Still configuring Swagger for easy API Endpoints documentation
+- Still configuring Swagger for easy API Endpoints documentation
 ---
 
 ## **🛠️ Technologies Used**  
