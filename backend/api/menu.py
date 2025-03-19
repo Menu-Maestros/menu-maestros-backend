@@ -4,7 +4,7 @@ from sqlalchemy.future import select
 from backend.database import get_db
 from backend.models.menu_items import MenuItem
 
-from backend.schemas.menu import MenuItemCreate, MenuItemUpdate
+from backend.schemas.menu_items import MenuItemCreate, MenuItemUpdate
 
 from uuid import UUID
 
