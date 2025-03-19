@@ -1,11 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from uuid import UUID
 
 from backend.database import get_db
+
 from backend.models.orders import Order
-from backend.schemas.orders import OrderCreate, OrderUpdate
+from backend.models.order_items import OrderItem
+
+from backend.schemas.orders import OrderCreate, OrderCreateWithItems, OrderUpdate
+
+from uuid import UUID
+
 
 router = APIRouter()
 
@@ -14,7 +20,7 @@ async def get_orders(db: AsyncSession = Depends(get_db)):
     """Retrieve all orders."""
     query = select(Order)
     results = await db.execute(query)
-    return results.scalars().all()
+    return results.unique().scalars().all()
 
 @router.get("/orders/{order_id}", response_model=OrderCreate)
 async def get_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
@@ -31,16 +37,23 @@ async def get_orders_by_status(status: str, db: AsyncSession = Depends(get_db)):
     results = await db.execute(query)
     return results.scalars().all()
 
-@router.post("/orders", response_model=OrderCreate)
-async def create_order(order: OrderCreate, db: AsyncSession = Depends(get_db)):
-    """Create a new order."""
-    new_order = Order(
-        user_id=order.user_id,
-        status=order.status if order.status is not None else None
-    )
+@router.post("/orders", response_model=OrderCreateWithItems)
+async def create_order_with_items(order_data: OrderCreateWithItems, db: AsyncSession = Depends(get_db)):
+    """Create an order along with its order items in a single transaction."""
+    new_order = Order(user_id=order_data.user_id)
+
     db.add(new_order)
+    await db.flush() 
+
+    order_items = [
+        OrderItem(order_id=new_order.id, menu_item_id=item.menu_item_id, quantity=item.quantity, price=item.price)
+        for item in order_data.order_items
+    ]
+    db.add_all(order_items)
+
     await db.commit()
     await db.refresh(new_order)
+
     return new_order
 
 @router.put("/orders/{order_id}", response_model=OrderUpdate)
@@ -98,6 +111,8 @@ async def delete_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
     order = await db.get(Order, order_id)
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    db.delete(order)
+    
+    await db.delete(order)
     await db.commit()
-    return {"message": "Order deleted successfully!"}
+
+    return {"message": "Order and order items deleted successfully!"}

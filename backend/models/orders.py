@@ -15,5 +15,5 @@ class Order(Base):
     status = Column(String, default="pending")
     created_at = Column(TIMESTAMP, default=datetime.now())
     
-    user = relationship("User", back_populates="orders")
-    order_items = relationship("OrderItem", back_populates="order")
+    user = relationship("User", back_populates="orders", lazy="joined")
+    order_items = relationship("OrderItem", back_populates="order", lazy="joined", cascade="all, delete-orphan")

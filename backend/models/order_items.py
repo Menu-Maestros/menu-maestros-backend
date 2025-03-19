@@ -17,5 +17,5 @@ class OrderItem(Base):
     price = Column(DECIMAL(10, 2), nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.now())
     
-    order = relationship("Order", back_populates="order_items")
-    menu_item = relationship("MenuItem", back_populates="order_items")
+    order = relationship("Order", back_populates="order_items", lazy="joined")
+    menu_item = relationship("MenuItem", back_populates="order_items", lazy="joined") 
