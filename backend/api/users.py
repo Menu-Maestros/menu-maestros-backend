@@ -9,14 +9,14 @@ from backend.schemas.users import UserCreate, UserUpdate
 
 router = APIRouter()
 
-@router.get("/users/", response_model=list[UserUpdate])
+@router.get("/users/", response_model=list[UserUpdate], tags=["Users Endpoints"])
 async def get_users(db: AsyncSession = Depends(get_db)):
     """Retrieve all users."""
     result = await db.execute(select(User))
     users = result.scalars().all()
     return users
 
-@router.get("/users/{user_id}", response_model=UserUpdate)
+@router.get("/users/{user_id}", response_model=UserUpdate, tags=["Users Endpoints"])
 async def get_user(user_id: UUID, db: AsyncSession = Depends(get_db)):
     """Retrieve a single user by UUID."""
     user = await db.get(User, user_id)
@@ -24,14 +24,14 @@ async def get_user(user_id: UUID, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@router.get("/users/type/{user_type}", response_model=list[UserUpdate])
+@router.get("/users/type/{user_type}", response_model=list[UserUpdate], tags=["Users Endpoints"])
 async def get_users_by_type(user_type: str, db: AsyncSession = Depends(get_db)):
     """Retrieve all users of a specific type."""
     result = await db.execute(select(User).where(User.user_type == user_type))
     users = result.scalars().all()
     return users
 
-@router.post("/users/", response_model=UserCreate)
+@router.post("/users/", response_model=UserCreate, tags=["Users Endpoints"])
 async def add_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     try:
         # Create a new user
@@ -50,7 +50,7 @@ async def add_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error adding user: {str(e)}")
 
-@router.put("/users/{user_id}", response_model=UserUpdate)
+@router.put("/users/{user_id}", response_model=UserUpdate, tags=["Users Endpoints"])
 async def update_user(
     user_id: UUID,
     user_data: UserUpdate,
@@ -68,7 +68,7 @@ async def update_user(
     await db.refresh(user)
     return user
 
-@router.delete("/users/{user_id}")
+@router.delete("/users/{user_id}", tags=["Users Endpoints"])
 async def delete_user(user_id: UUID, db: AsyncSession = Depends(get_db)):
     """Delete a user from the database using UUID."""
     user = await db.get(User, user_id)
