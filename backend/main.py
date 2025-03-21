@@ -29,8 +29,6 @@ async def api_auth_middleware(request: Request, call_next):
     
     return await call_next(request)
 
-    
-
 app.include_router(menu_router)
 app.include_router(user_router)
 app.include_router(order_router)
