@@ -22,7 +22,6 @@ async def api_auth_middleware(request: Request, call_next):
     """Middleware to protect all API endpoints except login/docs."""
     if request.url.path.startswith("/docs") or request.url.path.startswith("/openapi.json") or request.url.path.startswith("/login") or request.url.path.startswith("/register"):
         return await call_next(request)
-
     try:
         get_current_user(request)
     except HTTPException:
