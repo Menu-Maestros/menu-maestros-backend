@@ -1,10 +1,5 @@
-from fastapi import FastAPI, Depends, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.security import APIKeyHeader
-
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql import text
-
-from backend.database import get_db
 
 from backend.config import settings
 
