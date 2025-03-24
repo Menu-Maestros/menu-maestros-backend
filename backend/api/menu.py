@@ -76,4 +76,3 @@ async def delete_menu_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
     await db.commit()
 
     return {"message": "Menu item deleted successfully"}
-
