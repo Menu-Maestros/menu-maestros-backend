@@ -5,6 +5,7 @@ from uuid import UUID
 class MenuItemCreate(BaseModel):
     """Schema for creating a new menu item."""
     id: UUID | None = None  # Optional UUID, auto-generated
+    restaurant_id: UUID
     name: str
     description: str | None = None
     price: float

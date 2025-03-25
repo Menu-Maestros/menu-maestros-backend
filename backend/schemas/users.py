@@ -5,6 +5,7 @@ from uuid import UUID
 class UserCreate(BaseModel):
     """Schema for creating a new user."""
     id: UUID | None = None
+    restaurant_id: UUID | None = None
     name: str
     email: str
     password: str
@@ -24,6 +25,7 @@ class UserCreate(BaseModel):
 class UserUpdate(BaseModel):
     """Schema for updating an existing user."""
     id: UUID | None = None
+    restaurant_id: UUID | None = None
     name: str | None = None
     email: str | None = None
     # password: str | None = None  # Don't allow password update and don't show in response

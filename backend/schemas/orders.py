@@ -9,8 +9,10 @@ class OrderCreate(BaseModel):
     """Schema for creating a new order."""
     id: UUID | None = None
     user_id: UUID
+    restaurant_id: UUID
     # 'pending', 'preparing', 'ready', 'completed' and 'cancelled'
     status: str | None = None
+    name: str | None = None
 
     class Config:
         from_attributes = True
@@ -19,8 +21,10 @@ class OrderCreate(BaseModel):
 class OrderCreateWithItems(BaseModel):
     id: UUID | None = None
     user_id: UUID
+    restaurant_id: UUID
     order_items: List[OrderItemCreate]
     status: str | None = None
+    name: str | None = None
 
 
 class OrderUpdate(BaseModel):
@@ -28,6 +32,7 @@ class OrderUpdate(BaseModel):
     id: UUID | None = None
     user_id: UUID | None = None
     status: str  # 'pending', 'preparing', 'ready', 'completed' and 'cancelled'
+    name: str | None = None
 
     class Config:
         from_attributes = True
