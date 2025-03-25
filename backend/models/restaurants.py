@@ -18,8 +18,8 @@ class Restaurant(Base):
 
     # Relationships
     menu_items = relationship(
-        "MenuItem", back_populates="restaurants", cascade="all, delete")
+        "MenuItem", back_populates="restaurant", cascade="all, delete")
     orders = relationship(
-        "Order", back_populates="restaurants", cascade="all, delete")
+        "Order", back_populates="restaurant", cascade="all, delete")
     users = relationship(
-        "User", back_populates="restaurants", cascade="all, delete")
+        "User", back_populates="restaurant", cascade="all, delete")

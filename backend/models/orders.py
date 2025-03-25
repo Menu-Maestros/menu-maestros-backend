@@ -23,6 +23,6 @@ class Order(Base):
 
     user = relationship("User", back_populates="orders", lazy="joined")
     order_items = relationship(
-        "OrderItem", back_populates="orders", lazy="joined", cascade="all, delete-orphan")
+        "OrderItem", back_populates="order", lazy="joined", cascade="all, delete-orphan")
     restaurant = relationship(
         "Restaurant", back_populates="orders", lazy="joined")

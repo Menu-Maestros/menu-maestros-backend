@@ -26,5 +26,5 @@ class User(Base):
     state = Column(String, nullable=True)
     zip_code = Column(String, nullable=True)
 
-    orders = relationship("Order", back_populates="users")
+    orders = relationship("Order", back_populates="user")
     restaurant = relationship("Restaurant", back_populates="users")

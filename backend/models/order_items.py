@@ -21,5 +21,5 @@ class OrderItem(Base):
     created_at = Column(TIMESTAMP, default=datetime.now())
 
     order = relationship("Order", back_populates="order_items", lazy="joined")
-    menu_item = relationship(
+    menu_items = relationship(
         "MenuItem", back_populates="order_items", lazy="joined")
