@@ -7,9 +7,10 @@ from datetime import datetime
 
 import uuid
 
+
 class MenuItem(Base):
     __tablename__ = "menu_items"
-    
+
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     description = Column(String)
@@ -18,5 +19,5 @@ class MenuItem(Base):
     category = Column(String, nullable=False)
     available = Column(Boolean, default=True)
     created_at = Column(TIMESTAMP, default=datetime.now())
-        
+
     order_items = relationship("OrderItem", back_populates="menu_item")

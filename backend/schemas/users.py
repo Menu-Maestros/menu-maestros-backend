@@ -1,10 +1,11 @@
 from pydantic import BaseModel
 from uuid import UUID
 
+
 class UserCreate(BaseModel):
     """Schema for creating a new user."""
     id: UUID | None = None
-    name: str 
+    name: str
     email: str
     password: str
     user_type: str  # "customer", "restaurant_worker", "admin"
@@ -18,6 +19,7 @@ class UserCreate(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 class UserUpdate(BaseModel):
     """Schema for updating an existing user."""
@@ -37,10 +39,12 @@ class UserUpdate(BaseModel):
     class Config:
         from_attributes = True
 
+
 class UserLogin(BaseModel):
     """Schema for user login requests."""
     email: str
     password: str  # Provided by the user during login
+
 
 class UserPasswordUpdate(BaseModel):
     """Schema for updating only the password."""

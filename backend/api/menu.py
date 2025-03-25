@@ -10,12 +10,14 @@ from uuid import UUID
 
 router = APIRouter()
 
+
 @router.get("/menu/", response_model=list[MenuItemUpdate], tags=["Menu Items Endpoints"])
 async def get_menu(db: AsyncSession = Depends(get_db)):
     """Retrieve all menu items."""
     result = await db.execute(select(MenuItem))
     menu_items = result.scalars().all()
     return menu_items
+
 
 @router.get("/menu/{item_id}", response_model=MenuItemUpdate, tags=["Menu Items Endpoints"])
 async def get_menu_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
@@ -24,6 +26,7 @@ async def get_menu_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     return item
+
 
 @router.post("/menu/", response_model=MenuItemCreate, tags=["Menu Items Endpoints"])
 async def add_menu_item(item: MenuItemCreate, db: AsyncSession = Depends(get_db)):
@@ -45,12 +48,14 @@ async def add_menu_item(item: MenuItemCreate, db: AsyncSession = Depends(get_db)
         return new_item
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error adding menu item: {str(e)}")
-    
+        raise HTTPException(
+            status_code=500, detail=f"Error adding menu item: {str(e)}")
+
+
 @router.put("/menu/{item_id}", response_model=MenuItemUpdate, tags=["Menu Items Endpoints"])
 async def update_menu_item(
-    item_id: UUID, 
-    item_data: MenuItemUpdate, 
+    item_id: UUID,
+    item_data: MenuItemUpdate,
     db: AsyncSession = Depends(get_db)
 ):
     """Update an existing menu item using UUID."""
@@ -64,6 +69,7 @@ async def update_menu_item(
     await db.commit()
     await db.refresh(item)
     return item
+
 
 @router.delete("/menu/{item_id}", tags=["Menu Items Endpoints"])
 async def delete_menu_item(item_id: UUID, db: AsyncSession = Depends(get_db)):

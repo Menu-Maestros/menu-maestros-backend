@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     
     DATABASE_URL: str 
     SECRET_KEY: str
+    LOG_LEVEL: str = "INFO"
 
     class Config:
         env_file = ".env" 

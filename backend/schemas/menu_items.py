@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from uuid import UUID
 
+
 class MenuItemCreate(BaseModel):
     """Schema for creating a new menu item."""
     id: UUID | None = None  # Optional UUID, auto-generated
@@ -12,6 +13,7 @@ class MenuItemCreate(BaseModel):
 
     class Config:
         from_attributes = True  # Allows SQLAlchemy-to-Pydantic conversion
+
 
 class MenuItemUpdate(BaseModel):
     """Schema for updating an existing menu item."""
