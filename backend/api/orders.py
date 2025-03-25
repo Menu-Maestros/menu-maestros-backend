@@ -44,7 +44,10 @@ async def get_orders_by_status(status: str, db: AsyncSession = Depends(get_db)):
 @router.post("/orders", response_model=OrderCreateWithItems, tags=["Orders Endpoints"])
 async def create_order_with_items(order_data: OrderCreateWithItems, db: AsyncSession = Depends(get_db)):
     """Create an order along with its order items in a single transaction."""
-    new_order = Order(user_id=order_data.user_id)
+    new_order = Order(
+        user_id=order_data.user_id,
+        restaurant_id=order_data.restaurant_id
+    )
 
     db.add(new_order)
     await db.flush()

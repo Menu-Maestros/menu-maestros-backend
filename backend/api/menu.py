@@ -33,6 +33,7 @@ async def add_menu_item(item: MenuItemCreate, db: AsyncSession = Depends(get_db)
     try:
         # Create a new menu item
         new_item = MenuItem(
+            restaurant_id=item.restaurant_id,
             name=item.name,
             description=item.description,
             price=item.price,
