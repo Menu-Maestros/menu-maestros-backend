@@ -16,6 +16,7 @@ class OrderItem(Base):
         "orders.id", ondelete="CASCADE"))
     menu_item_id = Column(UUID(as_uuid=True), ForeignKey(
         "menu_items.id", ondelete="CASCADE"))
+
     quantity = Column(Integer, nullable=False)
     price = Column(DECIMAL(10, 2), nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.now())

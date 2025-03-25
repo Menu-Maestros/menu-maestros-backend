@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, TIMESTAMP
+from sqlalchemy import Column, String, Boolean, TIMESTAMP, ForeignKey, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from backend.models.base import Base
@@ -11,11 +11,13 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    restaurant_id = Column(UUID(as_uuid=True), ForeignKey(
+        "restaurants.id", ondelete="CASCADE"), nullable=True)
     name = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)  # Hashed password
-    # "customer", "restaurant_worker", "admin"
-    user_type = Column(String, nullable=False)
+    user_type = Column(Enum("admin", "restaurant_worker", "customer",
+                       "table", "totem", name="user_type"), nullable=False)
     active = Column(Boolean, default=True)  # Soft delete
     created_at = Column(TIMESTAMP, default=datetime.now())
 
@@ -25,4 +27,5 @@ class User(Base):
     state = Column(String, nullable=True)
     zip_code = Column(String, nullable=True)
 
-    orders = relationship("Order", back_populates="user")
+    orders = relationship("Order", back_populates="users")
+    restaurant = relationship("Restaurant", back_populates="users")
