@@ -1,6 +1,14 @@
 from sqlalchemy import create_engine
 from backend.config import settings
+
 from backend.models.base import Base
+
+from backend.models.restaurants import Restaurant
+from backend.models.menu_items import MenuItem
+from backend.models.orders import Order
+from backend.models.users import User
+from backend.models.order_items import OrderItem
+
 from alembic import context
 
 SYNC_DATABASE_URL = settings.DATABASE_URL.replace(
