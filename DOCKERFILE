@@ -14,5 +14,8 @@ COPY . .
 # Expose the FastAPI port
 EXPOSE 8000
 
-# Command to run the FastAPI app
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Command to run the FastAPI app with debug mode
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--log-level", "debug"]
+
+# Command to run the FastAPI app without debug mode
+# CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

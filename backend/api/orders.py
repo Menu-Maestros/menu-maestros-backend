@@ -15,14 +15,25 @@ from uuid import UUID
 
 router = APIRouter()
 
-@router.get("/orders", response_model=list[OrderCreate], tags=["Orders Endpoints"])
-async def get_orders(db: AsyncSession = Depends(get_db)):
-    """Retrieve all orders."""
-    query = select(Order)
+
+@router.get("/orders/{restaurant_id}", response_model=list[OrderCreate], tags=["Orders Endpoints"])
+async def get_orders(restaurant_id: UUID, db: AsyncSession = Depends(get_db)):
+    """Retrieve all orders for a restaurant."""
+    query = select(Order).where(Order.restaurant_id == restaurant_id)
     results = await db.execute(query)
     return results.unique().scalars().all()
 
-@router.get("/orders/{order_id}", response_model=OrderCreate, tags=["Orders Endpoints"])
+
+@router.get("/orders/{restaurant_id}/{user_id}", response_model=list[OrderCreate], tags=["Orders Endpoints"])
+async def get_orders(restaurant_id: UUID, user_id: UUID, db: AsyncSession = Depends(get_db)):
+    """Retrieve all orders by restaurant by user."""
+    query = select(Order).where(Order.restaurant_id ==
+                                restaurant_id).where(Order.user_id == user_id)
+    results = await db.execute(query)
+    return results.unique().scalars().all()
+
+
+@router.get("/orders/{restaurant_id}/{user_id}/{order_id}", response_model=OrderCreate, tags=["Orders Endpoints"])
 async def get_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
     """Retrieve a single order by UUID."""
     order = await db.get(Order, order_id)
@@ -30,23 +41,32 @@ async def get_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Order not found")
     return order
 
-@router.get("/orders/status/{status}", response_model=list[OrderCreate], tags=["Orders Endpoints"])
-async def get_orders_by_status(status: str, db: AsyncSession = Depends(get_db)):
+
+@router.get("/orders/{restaurant_id}/status/{status}", response_model=list[OrderCreate], tags=["Orders Endpoints"])
+async def get_orders_by_status(restaurant_id: UUID, status: str, db: AsyncSession = Depends(get_db)):
     """Retrieve all orders of a specific status."""
-    query = select(Order).where(Order.status == status)
+    query = select(Order)\
+        .where(Order.restaurant_id == restaurant_id)\
+        .where(Order.status == status)
     results = await db.execute(query)
     return results.scalars().all()
 
-@router.post("/orders", response_model=OrderCreateWithItems, tags=["Orders Endpoints"])
-async def create_order_with_items(order_data: OrderCreateWithItems, db: AsyncSession = Depends(get_db)):
+
+@router.post("/orders/{restaurant_id}/{user_id}", response_model=OrderCreateWithItems, tags=["Orders Endpoints"])
+async def create_order_with_items(restaurant_id: UUID, user_id: UUID, order_data: OrderCreateWithItems, db: AsyncSession = Depends(get_db)):
     """Create an order along with its order items in a single transaction."""
-    new_order = Order(user_id=order_data.user_id)
+    new_order = Order(
+        user_id=user_id,
+        restaurant_id=restaurant_id,
+        name=order_data.name
+    )
 
     db.add(new_order)
-    await db.flush() 
+    await db.flush()
 
     order_items = [
-        OrderItem(order_id=new_order.id, menu_item_id=item.menu_item_id, quantity=item.quantity, price=item.price)
+        OrderItem(order_id=new_order.id, menu_item_id=item.menu_item_id,
+                  quantity=item.quantity, price=item.price)
         for item in order_data.order_items
     ]
     db.add_all(order_items)
@@ -56,7 +76,8 @@ async def create_order_with_items(order_data: OrderCreateWithItems, db: AsyncSes
 
     return new_order
 
-@router.put("/orders/{order_id}", response_model=OrderUpdate, tags=["Orders Endpoints"])
+
+@router.put("/orders/{restaurant_id}/{user_id}/{order_id}", response_model=OrderUpdate, tags=["Orders Endpoints"])
 async def update_order(
     order_id: UUID,
     order_data: OrderUpdate,
@@ -72,18 +93,20 @@ async def update_order(
     await db.refresh(order)
     return order
 
+
 @router.put("/orders/{order_id}/next-status", response_model=OrderUpdate, tags=["Orders Endpoints"])
 async def update_order_status(order_id: UUID, db: AsyncSession = Depends(get_db)):
     """Move the order to the next status in the sequence."""
     order = await db.get(Order, order_id)
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    
+
     status_flow = ["pending", "preparing", "ready", "completed"]
-    
+
     if order.status == "completed":
-        raise HTTPException(status_code=400, detail="Order is already completed")
-    
+        raise HTTPException(
+            status_code=400, detail="Order is already completed")
+
     try:
         next_status = status_flow[status_flow.index(order.status) + 1]
         order.status = next_status
@@ -91,7 +114,9 @@ async def update_order_status(order_id: UUID, db: AsyncSession = Depends(get_db)
         await db.refresh(order)
         return order
     except IndexError:
-        raise HTTPException(status_code=400, detail="Invalid status transition")
+        raise HTTPException(
+            status_code=400, detail="Invalid status transition")
+
 
 @router.put("/orders/{order_id}/cancel", response_model=OrderUpdate, tags=["Orders Endpoints"])
 async def cancel_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
@@ -99,19 +124,20 @@ async def cancel_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
     order = await db.get(Order, order_id)
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    
+
     order.status = "cancelled"
     await db.commit()
     await db.refresh(order)
     return order
 
-@router.delete("/orders/{order_id}", tags=["Orders Endpoints"])
+
+@router.delete("/orders/{restaurant_id}/{user_id}/{order_id}", tags=["Orders Endpoints"])
 async def delete_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
     """Delete an existing order using UUID."""
     order = await db.get(Order, order_id)
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    
+
     await db.delete(order)
     await db.commit()
 
