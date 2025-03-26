@@ -30,6 +30,7 @@ class OrderCreateWithItems(BaseModel):
 class OrderUpdate(BaseModel):
     """Schema for updating an existing order."""
     id: UUID | None = None
+    restaurant_id: UUID | None = None
     user_id: UUID | None = None
     status: str  # 'pending', 'preparing', 'ready', 'completed' and 'cancelled'
     name: str | None = None
