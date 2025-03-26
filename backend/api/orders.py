@@ -9,6 +9,7 @@ from backend.models.orders import Order
 from backend.models.order_items import OrderItem
 
 from backend.schemas.orders import OrderCreate, OrderCreateWithItems, OrderUpdate
+from backend.schemas.order_items import OrderItemCreate
 
 from uuid import UUID
 
@@ -40,6 +41,14 @@ async def get_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     return order
+
+
+@router.get("/order_items/{order_id}", response_model=list[OrderItemCreate], tags=["Orders Endpoints"])
+async def get_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
+    """Retrieve order items for a given order."""
+    query = select(OrderItem).where(OrderItem.order_id == order_id)
+    results = await db.execute(query)
+    return results.unique().scalars().all()
 
 
 @router.get("/orders/{restaurant_id}/status/{status}", response_model=list[OrderCreate], tags=["Orders Endpoints"])
