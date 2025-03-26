@@ -9,6 +9,7 @@ class RestaurantCreate(BaseModel):
     name: str
     description: str | None = None
     # Address fields
+    phone: str
     address: str
     city: str
     state: str
@@ -25,6 +26,7 @@ class RestaurantUpdate(BaseModel):
     name: str
     description: str | None = None
     # Address fields
+    phone: str | None = None
     address: str | None = None
     city: str | None = None
     state: str | None = None

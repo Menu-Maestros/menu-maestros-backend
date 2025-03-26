@@ -7,6 +7,7 @@ class UserCreate(BaseModel):
     id: UUID | None = None
     restaurant_id: UUID | None = None
     name: str
+    phone: str
     email: str
     password: str
     user_type: str  # "customer", "restaurant_worker", "admin"
@@ -27,6 +28,7 @@ class UserUpdate(BaseModel):
     id: UUID | None = None
     restaurant_id: UUID | None = None
     name: str | None = None
+    phone: str | None = None
     email: str | None = None
     # password: str | None = None  # Don't allow password update and don't show in response
     user_type: str | None = None

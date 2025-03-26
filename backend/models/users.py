@@ -14,6 +14,7 @@ class User(Base):
     restaurant_id = Column(UUID(as_uuid=True), ForeignKey(
         "restaurants.id", ondelete="CASCADE"), nullable=True)
     name = Column(String, nullable=False)
+    phone = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)  # Hashed password
     user_type = Column(String, nullable=False)
