@@ -11,15 +11,15 @@ from uuid import UUID
 router = APIRouter()
 
 
-@router.get("/menu/", response_model=list[MenuItemUpdate], tags=["Menu Items Endpoints"])
-async def get_menu(db: AsyncSession = Depends(get_db)):
+@router.get("/menu/{restaurant_id}", response_model=list[MenuItemUpdate], tags=["Menu Items Endpoints"])
+async def get_menu(restaurant_id: UUID, db: AsyncSession = Depends(get_db)):
     """Retrieve all menu items."""
-    result = await db.execute(select(MenuItem))
+    result = await db.execute(select(MenuItem).where(MenuItem.restaurant_id == restaurant_id))
     menu_items = result.scalars().all()
     return menu_items
 
 
-@router.get("/menu/{item_id}", response_model=MenuItemUpdate, tags=["Menu Items Endpoints"])
+@router.get("/menu/{restaurant_id}/{item_id}", response_model=MenuItemUpdate, tags=["Menu Items Endpoints"])
 async def get_menu_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
     """Retrieve a single menu item by UUID."""
     item = await db.get(MenuItem, item_id)
@@ -28,12 +28,12 @@ async def get_menu_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
     return item
 
 
-@router.post("/menu/", response_model=MenuItemCreate, tags=["Menu Items Endpoints"])
-async def add_menu_item(item: MenuItemCreate, db: AsyncSession = Depends(get_db)):
+@router.post("/menu/{restaurant_id}", response_model=MenuItemCreate, tags=["Menu Items Endpoints"])
+async def add_menu_item(item: MenuItemCreate, restaurant_id: UUID, db: AsyncSession = Depends(get_db)):
     try:
         # Create a new menu item
         new_item = MenuItem(
-            restaurant_id=item.restaurant_id,
+            restaurant_id=restaurant_id,
             name=item.name,
             description=item.description,
             price=item.price,
@@ -53,8 +53,9 @@ async def add_menu_item(item: MenuItemCreate, db: AsyncSession = Depends(get_db)
             status_code=500, detail=f"Error adding menu item: {str(e)}")
 
 
-@router.put("/menu/{item_id}", response_model=MenuItemUpdate, tags=["Menu Items Endpoints"])
+@router.put("/menu/{restaurant_id}/{item_id}", response_model=MenuItemUpdate, tags=["Menu Items Endpoints"])
 async def update_menu_item(
+    restaurant_id: UUID,
     item_id: UUID,
     item_data: MenuItemUpdate,
     db: AsyncSession = Depends(get_db)
@@ -72,7 +73,7 @@ async def update_menu_item(
     return item
 
 
-@router.delete("/menu/{item_id}", tags=["Menu Items Endpoints"])
+@router.delete("/menu/{restaurant_id}/{item_id}", tags=["Menu Items Endpoints"])
 async def delete_menu_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
     """Delete a menu item from the database using UUID."""
     item = await db.get(MenuItem, item_id)
