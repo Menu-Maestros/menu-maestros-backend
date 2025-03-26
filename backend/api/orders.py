@@ -46,7 +46,8 @@ async def create_order_with_items(order_data: OrderCreateWithItems, db: AsyncSes
     """Create an order along with its order items in a single transaction."""
     new_order = Order(
         user_id=order_data.user_id,
-        restaurant_id=order_data.restaurant_id
+        restaurant_id=order_data.restaurant_id,
+        name=order_data.name
     )
 
     db.add(new_order)
