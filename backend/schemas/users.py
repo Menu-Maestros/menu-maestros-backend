@@ -1,5 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from uuid import UUID
+import re
 
 
 class UserCreate(BaseModel):
@@ -18,6 +19,12 @@ class UserCreate(BaseModel):
     city: str | None = None
     state: str | None = None
     zip_code: str | None = None
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def clean_phone(cls, phone: str) -> str:
+        """Remove all non-digit characters from phone number."""
+        return re.sub(r"\D", "", phone)
 
     class Config:
         from_attributes = True
@@ -39,6 +46,12 @@ class UserUpdate(BaseModel):
     city: str | None = None
     state: str | None = None
     zip_code: str | None = None
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def clean_phone(cls, phone: str) -> str:
+        """Remove all non-digit characters from phone number."""
+        return re.sub(r"\D", "", phone)
 
     class Config:
         from_attributes = True
