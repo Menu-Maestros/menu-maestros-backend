@@ -12,7 +12,8 @@ from backend.api.orders import router as order_router
 tags_metadata = [
     {"name": "Menu Items Endpoints", "description": "All about menu items"},
     {"name": "Orders Endpoints", "description": "All about orders and order items"},
-    {"name": "Users Endpoints", "description": "All about users"}
+    {"name": "Users Endpoints", "description": "All about users"},
+    {"name": "Restaurant Endpoints", "description": "All about restaurants"},
 ]
 
 app = FastAPI(openapi_tags=tags_metadata)
