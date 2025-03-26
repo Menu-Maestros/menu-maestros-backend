@@ -8,6 +8,7 @@ from backend.logger import logger
 from backend.api.menu import router as menu_router
 from backend.api.users import router as user_router
 from backend.api.orders import router as order_router
+from backend.api.restaurant import router as restaurant_router
 
 tags_metadata = [
     {"name": "Menu Items Endpoints", "description": "All about menu items"},
@@ -38,3 +39,4 @@ async def api_auth_middleware(request: Request, call_next):
 app.include_router(menu_router)
 app.include_router(user_router)
 app.include_router(order_router)
+app.include_router(restaurant_router)
