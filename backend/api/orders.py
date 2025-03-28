@@ -14,10 +14,13 @@ from backend.schemas.order_items import OrderItemCreate
 from uuid import UUID
 
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/restaurants/{restaurant_id}",
+    tags=["Orders Endpoints"]
+)
 
 
-@router.get("/orders/{restaurant_id}", response_model=list[OrderCreate], tags=["Orders Endpoints"])
+@router.get("/orders", response_model=list[OrderCreate])
 async def get_orders(restaurant_id: UUID, db: AsyncSession = Depends(get_db)):
     """Retrieve all orders for a restaurant."""
     query = select(Order).where(Order.restaurant_id == restaurant_id)
@@ -25,7 +28,7 @@ async def get_orders(restaurant_id: UUID, db: AsyncSession = Depends(get_db)):
     return results.unique().scalars().all()
 
 
-@router.get("/orders/{restaurant_id}/{user_id}", response_model=list[OrderCreate], tags=["Orders Endpoints"])
+@router.get("/users/{user_id}/orders", response_model=list[OrderCreate])
 async def get_orders(restaurant_id: UUID, user_id: UUID, db: AsyncSession = Depends(get_db)):
     """Retrieve all orders by restaurant by user."""
     query = select(Order).where(Order.restaurant_id ==
@@ -34,7 +37,7 @@ async def get_orders(restaurant_id: UUID, user_id: UUID, db: AsyncSession = Depe
     return results.unique().scalars().all()
 
 
-@router.get("/orders/{restaurant_id}/{user_id}/{order_id}", response_model=OrderCreate, tags=["Orders Endpoints"])
+@router.get("/users/{user_id}/orders/{order_id}", response_model=OrderCreate)
 async def get_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
     """Retrieve a single order by UUID."""
     order = await db.get(Order, order_id)
@@ -43,7 +46,7 @@ async def get_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
     return order
 
 
-@router.get("/order_items/{order_id}", response_model=list[OrderItemCreate], tags=["Orders Endpoints"])
+@router.get("/users/{user_id}/orders/{order_id}/items", response_model=list[OrderItemCreate])
 async def get_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
     """Retrieve order items for a given order."""
     query = select(OrderItem).where(OrderItem.order_id == order_id)
@@ -51,7 +54,7 @@ async def get_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
     return results.unique().scalars().all()
 
 
-@router.get("/orders/{restaurant_id}/status/{status}", response_model=list[OrderCreate], tags=["Orders Endpoints"])
+@router.get("/status/{status}/orders", response_model=list[OrderCreate])
 async def get_orders_by_status(restaurant_id: UUID, status: str, db: AsyncSession = Depends(get_db)):
     """Retrieve all orders of a specific status."""
     query = select(Order)\
@@ -61,7 +64,7 @@ async def get_orders_by_status(restaurant_id: UUID, status: str, db: AsyncSessio
     return results.scalars().all()
 
 
-@router.post("/orders/{restaurant_id}/{user_id}", response_model=OrderCreateWithItems, tags=["Orders Endpoints"])
+@router.post("/users/{user_id}/orders", response_model=OrderCreateWithItems)
 async def create_order_with_items(restaurant_id: UUID, user_id: UUID, order_data: OrderCreateWithItems, db: AsyncSession = Depends(get_db)):
     """Create an order along with its order items in a single transaction."""
     new_order = Order(
@@ -86,7 +89,7 @@ async def create_order_with_items(restaurant_id: UUID, user_id: UUID, order_data
     return new_order
 
 
-@router.put("/orders/{restaurant_id}/{user_id}/{order_id}", response_model=OrderUpdate, tags=["Orders Endpoints"])
+@router.put("/users/{user_id}/orders/{order_id}", response_model=OrderUpdate)
 async def update_order(
     order_id: UUID,
     order_data: OrderUpdate,
@@ -103,7 +106,7 @@ async def update_order(
     return order
 
 
-@router.put("/orders/{order_id}/next-status", response_model=OrderUpdate, tags=["Orders Endpoints"])
+@router.put("/users/{user_id}/orders/{order_id}/next-status", response_model=OrderUpdate)
 async def update_order_status(order_id: UUID, db: AsyncSession = Depends(get_db)):
     """Move the order to the next status in the sequence."""
     order = await db.get(Order, order_id)
@@ -127,7 +130,7 @@ async def update_order_status(order_id: UUID, db: AsyncSession = Depends(get_db)
             status_code=400, detail="Invalid status transition")
 
 
-@router.put("/orders/{order_id}/cancel", response_model=OrderUpdate, tags=["Orders Endpoints"])
+@router.put("/users/{user_id}/orders/{order_id}/cancel", response_model=OrderUpdate)
 async def cancel_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
     """Cancel the order by setting the status to 'cancelled'."""
     order = await db.get(Order, order_id)
@@ -140,7 +143,7 @@ async def cancel_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
     return order
 
 
-@router.delete("/orders/{restaurant_id}/{user_id}/{order_id}", tags=["Orders Endpoints"])
+@router.delete("/users/{user_id}/orders/{order_id}")
 async def delete_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
     """Delete an existing order using UUID."""
     order = await db.get(Order, order_id)
