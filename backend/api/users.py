@@ -10,14 +10,14 @@ from backend.schemas.users import UserCreate, UserUpdate, UserLogin, UserPasswor
 
 from backend.security import hash_password, pwd_context, verify_password, create_access_token, require_user_type
 
-router = APIRouter()
+router = APIRouter(tags=["Users Endpoints"])
 
 
-@router.get("/users/", response_model=list[UserUpdate], tags=["Users Endpoints"])
+@router.get("/users/", response_model=list[UserUpdate])
 async def get_users(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(
-        require_user_type(["admin", "restaurant_worker"])
+        require_user_type(["admin"])
     )
 ):
     """Retrieve all users."""
@@ -28,12 +28,12 @@ async def get_users(
     return users
 
 
-@router.get("/users/{user_id}", response_model=UserUpdate, tags=["Users Endpoints"])
+@router.get("/users/{user_id}", response_model=UserUpdate)
 async def get_user(
     user_id: UUID,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(
-        require_user_type(["admin", "restaurant_worker"])
+        require_user_type(["admin"])
     )
 ):
     """Retrieve a single user by UUID."""
@@ -43,15 +43,21 @@ async def get_user(
     return user
 
 
-@router.get("/users/type/{user_type}", response_model=list[UserUpdate], tags=["Users Endpoints"])
-async def get_users_by_type(user_type: str, db: AsyncSession = Depends(get_db)):
+@router.get("/users/type/{user_type}", response_model=list[UserUpdate])
+async def get_users_by_type(
+    user_type: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(
+        require_user_type(["admin"])
+    )
+):
     """Retrieve all users of a specific type."""
     result = await db.execute(select(User).where(User.user_type == user_type))
     users = result.scalars().all()
     return users
 
 
-@router.post("/register/", response_model=UserUpdate, tags=["Users Endpoints"])
+@router.post("/register/", response_model=UserUpdate)
 async def add_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     try:
         # Hash the user's password before storing it
@@ -82,7 +88,7 @@ async def add_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
             status_code=500, detail=f"Error adding user: {str(e)}")
 
 
-@router.post("/login/", tags=["Users Endpoints"])
+@router.post("/login/")
 async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
     """Authenticate user and return JWT token."""
     result = await db.execute(select(User).where(User.email == user.email))
@@ -103,7 +109,7 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.put("/users/{user_id}/password", tags=["Users Endpoints"])
+@router.put("/users/{user_id}/password")
 async def update_password(
     user_id: UUID,
     password_data: UserPasswordUpdate,
@@ -125,7 +131,7 @@ async def update_password(
     return {"message": "Password updated successfully"}
 
 
-@router.put("/users/{user_id}", response_model=UserUpdate, tags=["Users Endpoints"])
+@router.put("/users/{user_id}", response_model=UserUpdate)
 async def update_user(
     user_id: UUID,
     user_data: UserUpdate,
@@ -144,8 +150,14 @@ async def update_user(
     return user
 
 
-@router.delete("/users/{user_id}", tags=["Users Endpoints"])
-async def delete_user(user_id: UUID, db: AsyncSession = Depends(get_db)):
+@router.delete("/users/{user_id}")
+async def delete_user(
+    user_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(
+        require_user_type(["admin"])
+    )
+):
     """Delete a user from the database using UUID."""
     user = await db.get(User, user_id)
     if not user:

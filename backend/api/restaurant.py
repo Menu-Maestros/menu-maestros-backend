@@ -6,10 +6,13 @@ from backend.models.restaurants import Restaurant
 from backend.schemas.restaurants import RestaurantCreate, RestaurantUpdate
 from uuid import UUID
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/restaurants",
+    tags=["Restaurant Endpoints"]
+)
 
 
-@router.get("/restaurants/", response_model=list[RestaurantUpdate], tags=["Restaurant Endpoints"])
+@router.get("/", response_model=list[RestaurantUpdate])
 async def get_restaurants(db: AsyncSession = Depends(get_db)):
     """Retrieve all restaurants."""
     result = await db.execute(select(Restaurant))
@@ -17,7 +20,7 @@ async def get_restaurants(db: AsyncSession = Depends(get_db)):
     return restaurants
 
 
-@router.get("/restaurants/{restaurant_id}", response_model=RestaurantUpdate, tags=["Restaurant Endpoints"])
+@router.get("/{restaurant_id}", response_model=RestaurantUpdate)
 async def get_restaurant(restaurant_id: UUID, db: AsyncSession = Depends(get_db)):
     """Retrieve a single restaurant by UUID."""
     restaurant = await db.get(Restaurant, restaurant_id)
@@ -26,7 +29,7 @@ async def get_restaurant(restaurant_id: UUID, db: AsyncSession = Depends(get_db)
     return restaurant
 
 
-@router.post("/restaurants/", response_model=RestaurantCreate, tags=["Restaurant Endpoints"])
+@router.post("/", response_model=RestaurantCreate)
 async def add_restaurant(restaurant: RestaurantCreate, db: AsyncSession = Depends(get_db)):
     try:
         new_restaurant = Restaurant(
@@ -47,7 +50,7 @@ async def add_restaurant(restaurant: RestaurantCreate, db: AsyncSession = Depend
             status_code=500, detail=f"Error adding restaurant: {str(e)}")
 
 
-@router.put("/restaurants/{restaurant_id}", response_model=RestaurantUpdate, tags=["Restaurant Endpoints"])
+@router.put("/{restaurant_id}", response_model=RestaurantUpdate)
 async def update_restaurant(
     restaurant_id: UUID,
     restaurant_data: RestaurantUpdate,
@@ -66,7 +69,7 @@ async def update_restaurant(
     return restaurant
 
 
-@router.delete("/restaurants/{restaurant_id}", tags=["Restaurant Endpoints"])
+@router.delete("/{restaurant_id}")
 async def delete_restaurant(restaurant_id: UUID, db: AsyncSession = Depends(get_db)):
     """Delete a restaurant from the database using UUID."""
     restaurant = await db.get(Restaurant, restaurant_id)
