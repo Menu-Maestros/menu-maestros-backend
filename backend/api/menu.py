@@ -1,16 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
 from backend.database import get_db
 from backend.models.menu_items import MenuItem
-
 from backend.schemas.menu_items import MenuItemCreate, MenuItemUpdate
+from backend.security import require_user_type
 
 from uuid import UUID
 
 router = APIRouter(
     prefix="/restaurants/{restaurant_id}/menu_items",
-    tags=["Menu Items Endpoints"]
+    tags=["Menu Items Endpoints"],
+    dependencies=[Depends(require_user_type(["admin", "restaurant_worker"]))]
 )
 
 

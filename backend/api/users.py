@@ -17,7 +17,7 @@ router = APIRouter(tags=["Users Endpoints"])
 async def get_users(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(
-        require_user_type(["admin", "restaurant_worker"])
+        require_user_type(["admin"])
     )
 ):
     """Retrieve all users."""
@@ -33,7 +33,7 @@ async def get_user(
     user_id: UUID,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(
-        require_user_type(["admin", "restaurant_worker"])
+        require_user_type(["admin"])
     )
 ):
     """Retrieve a single user by UUID."""
@@ -44,7 +44,13 @@ async def get_user(
 
 
 @router.get("/users/type/{user_type}", response_model=list[UserUpdate])
-async def get_users_by_type(user_type: str, db: AsyncSession = Depends(get_db)):
+async def get_users_by_type(
+    user_type: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(
+        require_user_type(["admin"])
+    )
+):
     """Retrieve all users of a specific type."""
     result = await db.execute(select(User).where(User.user_type == user_type))
     users = result.scalars().all()
@@ -145,7 +151,13 @@ async def update_user(
 
 
 @router.delete("/users/{user_id}")
-async def delete_user(user_id: UUID, db: AsyncSession = Depends(get_db)):
+async def delete_user(
+    user_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(
+        require_user_type(["admin"])
+    )
+):
     """Delete a user from the database using UUID."""
     user = await db.get(User, user_id)
     if not user:
