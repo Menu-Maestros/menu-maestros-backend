@@ -1,4 +1,4 @@
-# **🍽️ Streamlit Menu App Backend**  
+# **🍽️ Menu Maestros Backend**  
 This is the **FastAPI backend** for the Streamlit-based restaurant menu application.
 
 ## **📌 Features**  
