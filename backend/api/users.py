@@ -28,15 +28,36 @@ async def get_users(
     return users
 
 
+@router.get("/users/current_user", response_model=UserUpdate)
+async def get_user(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(
+        require_user_type(["admin", "restaurant_worker", "customer"])
+    )
+):
+    """Retrieve current user."""
+    logger.debug(
+        f"Restricted for user type admin or restaurant worker: {current_user}")
+    user_id = current_user["user_id"]
+
+    user = await db.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
 @router.get("/users/{user_id}", response_model=UserUpdate)
 async def get_user(
     user_id: UUID,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(
-        require_user_type(["admin"])
+        require_user_type(["admin", "restaurant_worker", "customer"])
     )
 ):
     """Retrieve a single user by UUID."""
+    if current_user["user_type"] != "admin":
+        user_id = current_user["user_id"]
+
     user = await db.get(User, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -102,11 +123,20 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=403, detail="User account is inactive")
 
     # Generate JWT token
-    token_data = {"sub": user_db.email, "user_id": str(
-        user_db.id), "user_type": user_db.user_type}
+    token_data = {
+        "sub": user_db.email,
+        "user_id": str(user_db.id),
+        "user_type": user_db.user_type
+    }
+    logger.debug(f"Token data: {token_data}")
     access_token = create_access_token(token_data)
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return_data = {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
+
+    return return_data
 
 
 @router.put("/users/{user_id}/password")

@@ -11,6 +11,8 @@ from backend.models.order_items import OrderItem
 from backend.schemas.orders import OrderCreate, OrderCreateWithItems, OrderUpdate
 from backend.schemas.order_items import OrderItemCreate
 
+from backend.security import require_user_type
+
 from uuid import UUID
 
 
@@ -29,8 +31,18 @@ async def get_orders(restaurant_id: UUID, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/users/{user_id}/orders", response_model=list[OrderCreate])
-async def get_orders(restaurant_id: UUID, user_id: UUID, db: AsyncSession = Depends(get_db)):
+async def get_orders(
+    restaurant_id: UUID,
+    user_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(
+        require_user_type(["admin", "restaurant_worker", "customer"])
+    )
+):
     """Retrieve all orders by restaurant by user."""
+    if current_user["user_type"] == "customer":
+        user_id = current_user["user_id"]
+
     query = select(Order).where(Order.restaurant_id ==
                                 restaurant_id).where(Order.user_id == user_id)
     results = await db.execute(query)
