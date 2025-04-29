@@ -172,3 +172,32 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+
+# Terraform plan files
+*.tfplan
+
+# Terraform variable files (optional, if sensitive)
+*.tfvars
+*.tfvars.json
+
+# Provider-specific directories (e.g., .terraform/)
+terraform/.terraform/
+
+# Override files (often local only)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Sentinel policy files (if used)
+.sentinel/
+
+# Sensitive logs or debug
+.terraform.lock.hcl
