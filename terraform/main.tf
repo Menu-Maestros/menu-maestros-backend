@@ -19,7 +19,7 @@ resource "aws_vpc" "main" {
 resource "aws_subnet" "main" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.subnet_cidr_block
-  availability_zone = "${var.aws_region}"
+  availability_zone = "${var.aws_region}a"
 
   tags = {
     Name = "${var.project_name}-subnet"
@@ -198,7 +198,7 @@ resource "aws_security_group" "main" {
     from_port   = var.container_port
     to_port     = var.container_port
     protocol    = "tcp"
-    cidr_blocks = ["192.168.0.7/32"]
+    cidr_blocks = ["201.21.152.124/32"]
   }
 
   egress {

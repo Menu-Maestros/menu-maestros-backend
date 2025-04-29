@@ -47,8 +47,3 @@ variable "subnet_cidr_block" {
   type        = string
   default     = "10.0.1.0/24"
 }
-
-variable "key_pair_name" {
-  description = "The EC2 Key Pair for SSH access (if needed)."
-  type        = string
-}
